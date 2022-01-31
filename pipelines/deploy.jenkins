@@ -34,7 +34,16 @@ podTemplate(label: POD_LABEL, containers: [
       stage('Terraform Apply') {
         container('terraform') {
           ansiColor('xterm') {
-            sh "terraform apply"
+            script {
+              def userInput = input(id: 'confirm', message: 'Apply Terraform?', parameters: [
+                [
+                  $class: 'BooleanParameterDefinition',
+                  defaultValue: false,
+                  description: 'Apply terraform',
+                  name: 'confirm'
+                ]
+              ])
+            }
           }
         }
       }
