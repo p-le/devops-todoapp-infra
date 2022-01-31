@@ -24,6 +24,13 @@ podTemplate(label: POD_LABEL, containers: [
           userRemoteConfigs: [[url: 'https://github.com/p-le/test-todoapp-infra.git']]
         ])
       }
+      stage('Terraform Init') {
+        container('terraform') {
+          ansiColor('xterm') {
+            sh "terraform init"
+          }
+        }
+      }
       stage('Terraform Plan') {
         container('terraform') {
           ansiColor('xterm') {
