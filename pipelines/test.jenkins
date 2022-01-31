@@ -5,7 +5,7 @@ def POD_LABEL   = "k8sagent-test-infra"
 podTemplate(label: POD_LABEL, containers: [
   containerTemplate(
     name: 'terraform',
-    image: 'docker pull hashicorp/terraform:1.1.4',
+    image: 'hashicorp/terraform:1.1.4',
     envVars: [
       containerEnvVar(key: 'GOOGLE_APPLICATION_CREDENTIALS', value: '/credentials/terraform-build-sa.json'),
     ],
