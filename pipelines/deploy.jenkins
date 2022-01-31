@@ -35,15 +35,11 @@ podTemplate(label: POD_LABEL, containers: [
         container('terraform') {
           ansiColor('xterm') {
             script {
-              def userInput = input(id: 'confirm', message: 'Apply Terraform?', parameters: [
-                [
-                  $class: 'BooleanParameterDefinition',
-                  defaultValue: false,
-                  description: 'Apply terraform',
-                  name: 'confirm'
-                ]
+              def applyInput = input(message: 'Do you want to apply this plan?', ok: 'Yes', parameters: [
+                booleanParam(defaultValue: false, description: 'Apply', name: 'Yes?')
               ])
             }
+            echo "Terraform Apply?:" + applyInput
           }
         }
       }
