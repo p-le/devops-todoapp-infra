@@ -68,6 +68,7 @@ podTemplate(label: POD_LABEL, containers: [
       }
 
       container('terraform') {
+        sh "ls -la ."
         unstash name: "${env.JOB_NAME}-${env.BUILD_NUMBER}-plan"
         sh "ls -la ."
         sh """
