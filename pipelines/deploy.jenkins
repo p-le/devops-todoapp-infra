@@ -38,15 +38,15 @@ podTemplate(label: POD_LABEL, containers: [
           def plan_exitcode = sh(script: "terraform plan -out=plan.out -detailed-exitcode", returnStatus: true)
           echo "Terraform Plan Exit Code: ${plan_exitcode}"
           if (plan_exitcode == 0) {
-            echo "Plan Succeeded with empty diff (no changes): job=${env.JOB_NAME} build=${env.BUILD_NUMBER}"
+            echo "Generated plan succeeded with empty diff (no changes): job=${env.JOB_NAME} build=${env.BUILD_NUMBER}"
             currentBuild.result = 'SUCCESS'
           }
           if (plan_exitcode == 1) {
-            echo "Plan Failed: job=${env.JOB_NAME} build=${env.BUILD_NUMBER}"
+            echo "Generated plan failed: job=${env.JOB_NAME} build=${env.BUILD_NUMBER}"
             currentBuild.result = 'FAILURE'
           }
           if (plan_exitcode == 2) {
-            echo "Plan Succeeded with non-empty diff: job=${env.JOB_NAME} build=${env.BUILD_NUMBER}"
+            echo "Generated plan succeeded with non-empty diff: job=${env.JOB_NAME} build=${env.BUILD_NUMBER}"
             stash name: "${env.JOB_NAME}-${env.BUILD_NUMBER}-plan", includes: "plan.out"
             apply_plan = true
           }
@@ -58,21 +58,30 @@ podTemplate(label: POD_LABEL, containers: [
       when {
         equals expected: true, actual: apply_plan
       }
+      if (!apply_plan) {
+        return
+      }
+
       try {
         input message: "Do you want to apply this plan"
       } catch (err) {
         echo "Aborted terraform apply"
-      }
-      unstash name: "${env.JOB_NAME}-${env.BUILD_NUMBER}-plan"
-      def apply_exitcode = sh(script: "terraform plan -out=plan.out -detailed-exitcode", returnStatus: true)
-      echo "Terraform Apply Exit Code: ${plan_exitcode}"
-      if (apply_exitcode == 0) {
-        echo "Apply Succeeded"
-        currentBuild.result = 'SUCCESS'
-      }
-      if (apply_exitcode == 1) {
-        echo "Apply Failed"
         currentBuild.result = 'FAILURE'
+        return
+      }
+
+      container('terraform') {
+        unstash name: "${env.JOB_NAME}-${env.BUILD_NUMBER}-plan"
+        def apply_exitcode = sh(script: "terraform plan -out=plan.out -detailed-exitcode", returnStatus: true)
+        echo "Terraform Apply Exit Code: ${plan_exitcode}"
+        if (apply_exitcode == 0) {
+          echo "Apply Succeeded"
+          currentBuild.result = 'SUCCESS'
+        }
+        if (apply_exitcode == 1) {
+          echo "Apply Failed"
+          currentBuild.result = 'FAILURE'
+        }
       }
     }
   }
