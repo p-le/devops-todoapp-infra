@@ -31,15 +31,11 @@ podTemplate(label: POD_LABEL, containers: [
           }
         }
       }
-      stage('Terraform Apply') {
+      stage('Terraform plan') {
         container('terraform') {
           ansiColor('xterm') {
-            script {
-              def applyInput = input(message: 'Do you want to apply this plan?', ok: 'Yes', parameters: [
-                booleanParam(defaultValue: false, description: 'Apply', name: 'Yes?')
-              ])
-            }
-            echo "Terraform Apply?:" + applyInput
+            def plan_exitcode = sh(script: "terraform plan -out=plan.out -detailed-exitcode", returnStatus: true).trim()
+            echo "${plan_exitcode}"
           }
         }
       }
