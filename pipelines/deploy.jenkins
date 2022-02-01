@@ -69,6 +69,13 @@ podTemplate(label: POD_LABEL, containers: [
 
       container('terraform') {
         unstash name: "${env.JOB_NAME}-${env.BUILD_NUMBER}-plan"
+        sh "ls -la ."
+        sh """
+          id
+          whoami
+          echo ${WORKSPACE}
+          realpath ${WORKSPACE}
+        """
         def apply_exitcode = sh(script: "terraform plan -out=plan.out -detailed-exitcode", returnStatus: true)
         echo "Terraform Apply Exit Code: ${plan_exitcode}"
         if (apply_exitcode == 0) {
