@@ -67,7 +67,7 @@ podTemplate(label: POD_LABEL, containers: [
       }
 
       container('terraform') {
-        def apply_exitcode = sh(script: "terraform apply plan.out -detailed-exitcode", returnStatus: true)
+        def apply_exitcode = sh(script: "terraform apply plan.out", returnStatus: true)
         echo "Terraform Apply Exit Code: ${apply_exitcode}"
         if (apply_exitcode == 0) {
           echo "Apply Succeeded"
