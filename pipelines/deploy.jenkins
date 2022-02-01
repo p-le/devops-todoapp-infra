@@ -55,9 +55,6 @@ podTemplate(label: POD_LABEL, containers: [
     }
 
     stage('Terraform Apply') {
-      when {
-        equals expected: true, actual: apply_plan
-      }
       if (!apply_plan) {
         return
       }
