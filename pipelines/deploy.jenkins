@@ -47,7 +47,6 @@ podTemplate(label: POD_LABEL, containers: [
           }
           if (plan_exitcode == 2) {
             echo "Generated plan succeeded with non-empty diff: job=${env.JOB_NAME} build=${env.BUILD_NUMBER}"
-            stash name: "${env.JOB_NAME}-${env.BUILD_NUMBER}-plan", includes: "plan.out"
             apply_plan = true
           }
         }
@@ -68,15 +67,6 @@ podTemplate(label: POD_LABEL, containers: [
       }
 
       container('terraform') {
-        sh "ls -la ."
-        unstash name: "${env.JOB_NAME}-${env.BUILD_NUMBER}-plan"
-        sh "ls -la ."
-        sh """
-          id
-          whoami
-          echo ${WORKSPACE}
-          realpath ${WORKSPACE}
-        """
         def apply_exitcode = sh(script: "terraform plan -out=plan.out -detailed-exitcode", returnStatus: true)
         echo "Terraform Apply Exit Code: ${plan_exitcode}"
         if (apply_exitcode == 0) {
