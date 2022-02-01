@@ -34,7 +34,7 @@ podTemplate(label: POD_LABEL, containers: [
       stage('Terraform plan') {
         container('terraform') {
           ansiColor('xterm') {
-            def plan_exitcode = sh(script: "terraform plan -out=plan.out -detailed-exitcode", returnStatus: true).trim()
+            def plan_exitcode = sh(script: "terraform plan -out=plan.out -detailed-exitcode", returnStatus: true)
             echo "${plan_exitcode}"
           }
         }
