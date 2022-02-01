@@ -35,7 +35,19 @@ podTemplate(label: POD_LABEL, containers: [
         container('terraform') {
           ansiColor('xterm') {
             def plan_exitcode = sh(script: "terraform plan -out=plan.out -detailed-exitcode", returnStatus: true)
-            echo "${plan_exitcode}"
+            echo "Terraform Plan Exit Code: ${plan_exitcode}"
+            if (plan_exitcode == 0) {
+              echo "Plan Succeeded with empty diff (no changes): ${env.JOB_NAME} - ${env.BUILD_NUMBER}"
+              currentBuild.result = 'SUCCESS'
+            }
+            if (plan_exitcode == 1) {
+              echo "Plan Failed: ${env.JOB_NAME} - ${env.BUILD_NUMBER}"
+              currentBuild.result = 'FAILURE'
+            }
+            if (plan_exitcode == 2) {
+              echo "Plan Succeeded with non-empty diff: ${env.JOB_NAME} - ${env.BUILD_NUMBER}"
+              stash name: "${env.JOB_NAME}-${env.BUILD_NUMBER}-plan" includes: "plan.out"
+            }
           }
         }
       }
