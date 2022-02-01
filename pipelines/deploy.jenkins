@@ -46,7 +46,7 @@ podTemplate(label: POD_LABEL, containers: [
             }
             if (plan_exitcode == 2) {
               echo "Plan Succeeded with non-empty diff: ${env.JOB_NAME} - ${env.BUILD_NUMBER}"
-              stash name: "${env.JOB_NAME}-${env.BUILD_NUMBER}-plan" includes: "plan.out"
+              stash name: "${env.JOB_NAME}-${env.BUILD_NUMBER}-plan", includes: "plan.out"
             }
           }
         }
