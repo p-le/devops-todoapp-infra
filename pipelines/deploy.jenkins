@@ -1,6 +1,7 @@
 #!/usr/bin/env groovy
 
 def POD_LABEL   = "k8sagent-deploy-infra"
+def apply_plan  = false
 
 podTemplate(label: POD_LABEL, containers: [
   containerTemplate(
@@ -15,41 +16,64 @@ podTemplate(label: POD_LABEL, containers: [
 ], volumes: [
   secretVolume(secretName: 'terraform-gcp-credentials', mountPath: '/credentials')
 ]) {
-    node(POD_LABEL) {
-      stage('Clone Repository') {
-        checkout([
-          $class: 'GitSCM',
-          branches: [[name: "*/master"]],
-          extensions: [],
-          userRemoteConfigs: [[url: 'https://github.com/p-le/test-todoapp-infra.git']]
-        ])
-      }
-      stage('Terraform Init') {
-        container('terraform') {
-          ansiColor('xterm') {
-            sh "terraform init"
-          }
+  node(POD_LABEL) {
+    stage('Clone Repository') {
+      checkout([
+        $class: 'GitSCM',
+        branches: [[name: "*/master"]],
+        extensions: [],
+        userRemoteConfigs: [[url: 'https://github.com/p-le/test-todoapp-infra.git']]
+      ])
+    }
+    stage('Terraform Init') {
+      container('terraform') {
+        ansiColor('xterm') {
+          sh "terraform init"
         }
       }
-      stage('Terraform plan') {
-        container('terraform') {
-          ansiColor('xterm') {
-            def plan_exitcode = sh(script: "terraform plan -out=plan.out -detailed-exitcode", returnStatus: true)
-            echo "Terraform Plan Exit Code: ${plan_exitcode}"
-            if (plan_exitcode == 0) {
-              echo "Plan Succeeded with empty diff (no changes): ${env.JOB_NAME} - ${env.BUILD_NUMBER}"
-              currentBuild.result = 'SUCCESS'
-            }
-            if (plan_exitcode == 1) {
-              echo "Plan Failed: ${env.JOB_NAME} - ${env.BUILD_NUMBER}"
-              currentBuild.result = 'FAILURE'
-            }
-            if (plan_exitcode == 2) {
-              echo "Plan Succeeded with non-empty diff: ${env.JOB_NAME} - ${env.BUILD_NUMBER}"
-              stash name: "${env.JOB_NAME}-${env.BUILD_NUMBER}-plan", includes: "plan.out"
-            }
+    }
+    stage('Terraform plan') {
+      container('terraform') {
+        ansiColor('xterm') {
+          def plan_exitcode = sh(script: "terraform plan -out=plan.out -detailed-exitcode", returnStatus: true)
+          echo "Terraform Plan Exit Code: ${plan_exitcode}"
+          if (plan_exitcode == 0) {
+            echo "Plan Succeeded with empty diff (no changes): job=${env.JOB_NAME} build=${env.BUILD_NUMBER}"
+            currentBuild.result = 'SUCCESS'
+          }
+          if (plan_exitcode == 1) {
+            echo "Plan Failed: job=${env.JOB_NAME} build=${env.BUILD_NUMBER}"
+            currentBuild.result = 'FAILURE'
+          }
+          if (plan_exitcode == 2) {
+            echo "Plan Succeeded with non-empty diff: job=${env.JOB_NAME} build=${env.BUILD_NUMBER}"
+            stash name: "${env.JOB_NAME}-${env.BUILD_NUMBER}-plan", includes: "plan.out"
+            apply_plan = true
           }
         }
       }
     }
+
+    stage('Terraform Apply') {
+      when {
+        equals expected: true, actual: apply_plan
+      }
+      try {
+        input message: "Do you want to apply this plan"
+      } catch (err) {
+        echo "Aborted terraform apply"
+      }
+      unstash name: "${env.JOB_NAME}-${env.BUILD_NUMBER}-plan"
+      def apply_exitcode = sh(script: "terraform plan -out=plan.out -detailed-exitcode", returnStatus: true)
+      echo "Terraform Apply Exit Code: ${plan_exitcode}"
+      if (apply_exitcode == 0) {
+        echo "Apply Succeeded"
+        currentBuild.result = 'SUCCESS'
+      }
+      if (apply_exitcode == 1) {
+        echo "Apply Failed"
+        currentBuild.result = 'FAILURE'
+      }
+    }
+  }
 }
