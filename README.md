@@ -1,6 +1,6 @@
 # Requirements
 
-1. Install `tfenv`: https://github.com/tfutils/tfenv
+1. Install `tfenv` then install latest Terraform version: https://github.com/tfutils/tfenv
 
 1. Prepare GCP Service Account Key
 - Create a service account with enough IAM Role Permission in target GCP Project
