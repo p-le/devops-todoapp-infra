@@ -1,10 +1,8 @@
 # Requirements
 
-1. Install `tfenv`
+1. Install `tfenv`: https://github.com/tfutils/tfenv
 
-Reference: https://github.com/tfutils/tfenv
-
-2. Prepare GCP Service Account Key
+1. Prepare GCP Service Account Key
 - Create a service account with enough IAM Role Permission in target GCP Project
 - Generate JSON Service Account Key
 - Download, rename to `service_account.json` and place JSON Service Account Key in root folder of this project
