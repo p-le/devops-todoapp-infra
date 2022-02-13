@@ -1,4 +1,8 @@
 # Requirements
+Required Files:
+- `.env`
+- `config.gcs.tfbackend`
+- `terraform.tfvars`
 
 ### Step 1: Install Terraform
 - Install `tfenv`: https://github.com/tfutils/tfenv

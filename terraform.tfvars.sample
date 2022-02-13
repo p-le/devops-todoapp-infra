@@ -13,9 +13,11 @@ db_config = {
 }
 
 frontend_config = {
-  is_enabled = "true"
+  is_enabled = "false"
+  image_tag  = "<image-tag>
 }
 
 backend_config = {
-  is_enabled = "true"
+  is_enabled = "false"
+  image_tag  = "<image-tag>
 }
