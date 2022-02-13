@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: todoapp-backend
-          image: asia-northeast1-docker.pkg.dev/phu-le-it/devops-cicd-repository/todoapp-backend:v1.0.7
+          image: asia-northeast1-docker.pkg.dev/phu-le-it/todoapp-repository/todoapp-backend:1.0.7
           imagePullPolicy: Always
           ports:
             - containerPort: 80
