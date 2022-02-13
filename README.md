@@ -21,6 +21,14 @@
 2. Copy `config.gcs.tfbackend.sample` to `config.gcs.tfbackend`
 3. Update value of `bucket`
 
+### Step 5: terraform.tfvars
+1. Copy `terraform.tfvars.sample` to `terraform.tfvars`
+2. Update value of `project_id`
+3. Update value of `region`
+4. Update value of `zone`
+5. Update value of `db_user`
+6. Update value of `db_password`
+
 # Execute Terraform Plan
 Using `terraform.sh` script to execute terraform commands
 

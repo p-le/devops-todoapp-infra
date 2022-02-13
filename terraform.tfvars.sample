@@ -1,14 +1,14 @@
-service_name = "devops-demo"
-project_id   = "phu-le-it"
-region       = "asia-northeast1"
-zone         = "asia-northeast1-b"
+service_name = "todoapp"
+project_id   = "<gcp-project-id>"
+region       = "<target-gcp-region>"
+zone         = "<target-gcp-zone>"
 
 db_config = {
   is_enabled  = "true"
   db_version  = "MYSQL_8_0"
   db_tier     = "db-f1-micro"
-  db_user     = "admin"
-  db_password = "5WE&ladz"
+  db_user     = "<db-user>"
+  db_password = "<db-password>"
   db_name     = "todoapp"
 }
 
