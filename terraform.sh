@@ -1,5 +1,5 @@
 #!/bin/bash
-CURRENT_DIR=$(pwd)
-export GOOGLE_PROJECT=phu-le-it
-export GOOGLE_APPLICATION_CREDENTIALS="${CURRENT_DIR}/service_account.json"
+if [ -f .env ]; then
+  export $(echo $(cat .env | sed 's/#.*//g'| xargs) | envsubst)
+fi
 terraform $@
