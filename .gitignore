@@ -40,5 +40,6 @@ terraform.rc
 
 # End of https://www.toptal.com/developers/gitignore/api/terraform
 service_account.json
+config.gcs.tfbackend
 
 .env

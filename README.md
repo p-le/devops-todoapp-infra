@@ -1,17 +1,29 @@
 # Requirements
 
-1. Install `tfenv` then install latest Terraform version: https://github.com/tfutils/tfenv
-2. Prepare GCP Service Account Key
+### Step 1: Install Terraform
+- Install `tfenv`: https://github.com/tfutils/tfenv
+- Install latest Terraform version
+
+### Step 2: GCP Service Account Key
 - Create a service account with enough IAM Role Permission in target GCP Project
 - Generate JSON Service Account Key
 - Download, rename to `service_account.json` and place JSON Service Account Key in root folder of this project
 - Update `GOOGLE_PROJECT` in `terraform.sh`
-3. Generate `.env` file, update `GOOGLE_PROJECT`, and `GOOGLE_APPLICATION_CREDENTIALS` values
+
 *Note: Do not push GCP Service Account Key into GitHub Respository*
 
+### Step 3: `.env` file
+1. Generate `.env` file
+2. Update `GOOGLE_PROJECT`, and `GOOGLE_APPLICATION_CREDENTIALS` values
+
+### Step 4: Remote Backend State
+1. Create a Google Cloud Storage (GCS) Bucket for Terraform remote state
+2. Copy `config.gcs.tfbackend.sample` to `config.gcs.tfbackend`
+3. Update value of `bucket`
 
 # Execute Terraform Plan
 Using `terraform.sh` script to execute terraform commands
+
 ```
 ./terraform.sh init
 ./terraform.sh plan
