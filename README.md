@@ -1,6 +1,7 @@
 # Requirements
 
 1. Install `tfenv`
+
 Reference: https://github.com/tfutils/tfenv
 
 2. Prepare GCP Service Account Key
@@ -8,6 +9,8 @@ Reference: https://github.com/tfutils/tfenv
 - Generate JSON Service Account Key
 - Download, rename to `service_account.json` and place JSON Service Account Key in root folder of this project
 - Update `GOOGLE_PROJECT` in `terraform.sh`
+
+Note: Do not push GCP Service Account Key into GitHub Respository
 
 # Execute Terraform Plan
 ```
