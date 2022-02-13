@@ -19,3 +19,18 @@ spec:
           ports:
             - containerPort: 80
       restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todoapp-frontend-service
+  labels:
+    app: todoapp-frontend
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: todoapp-frontend
+  type: LoadBalancer
