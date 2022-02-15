@@ -1,20 +1,20 @@
-kind: Deployment
 apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: todoapp-frontend
+  name: ${ROLE}
 spec:
-  replicas: 2
+  replicas: ${REPLICAS}
   selector:
     matchLabels:
-      app: todoapp-frontend
+      app: ${ROLE}
   template:
     metadata:
       labels:
-        app: todoapp-frontend
+        app: ${ROLE}
     spec:
       containers:
-        - name: todoapp-frontend
-          image: asia-northeast1-docker.pkg.dev/phu-le-it/todoapp-repository/todoapp-frontend:1.0.2
+        - name: ${ROLE}
+          image: ${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY_NAME}/${IMAGE_NAME}:${IMAGE_TAG}
           imagePullPolicy: Always
           ports:
             - containerPort: 80
@@ -23,14 +23,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: todoapp-frontend-service
+  name: ${ROLE}-service
   labels:
-    app: todoapp-frontend
+    app: ${ROLE}
 spec:
   ports:
   - port: 80
     protocol: TCP
     name: http
   selector:
-    app: todoapp-frontend
-  type: LoadBalancer
+    app: ${ROLE}

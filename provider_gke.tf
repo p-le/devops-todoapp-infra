@@ -1,3 +1,4 @@
+# Note: Dynamically generated only if GKE Cluster is created
 module "gke_auth" {
   depends_on = [
     google_container_cluster.todoapp[0]

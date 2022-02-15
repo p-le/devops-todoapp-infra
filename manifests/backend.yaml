@@ -1,21 +1,80 @@
-kind: Deployment
-apiVersion: apps/v1
+apiVersion: v1
+kind: ServiceAccount
 metadata:
-  name: todoapp-backend
+  name: backend-sa
+  annotations:
+    iam.gke.io/gcp-service-account: ${SERVICE_ACCOUNT_EMAIL}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${ROLE}
 spec:
-  replicas: 2
+  replicas: ${REPLICAS}
   selector:
     matchLabels:
-      app: todoapp-backend
+      app: ${ROLE}
   template:
     metadata:
       labels:
-        app: todoapp-backend
+        app: ${ROLE}
     spec:
+      serviceAccountName: backend-sa
       containers:
-        - name: todoapp-backend
-          image: asia-northeast1-docker.pkg.dev/phu-le-it/todoapp-repository/todoapp-backend:1.0.7
+        - name: ${ROLE}
+          image: ${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY_NAME}/${IMAGE_NAME}:${IMAGE_TAG}
           imagePullPolicy: Always
+          env:
+            - name: DB_HOST
+              value: 127.0.0.1:3306
+            - name: DB_USER
+              value: ${DB_USER}
+            - name: DB_PASSWORD
+              value: ${DB_PASSWORD}
+            - name: LOG_LEVEL
+              value: debug
           ports:
-            - containerPort: 80
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 3
+        - name: cloudsql-proxy
+          image: gcr.io/cloudsql-docker/gce-proxy:1.11
+          command:
+            - /cloud_sql_proxy
+            - -instances=${DB_INSTANCE_CONNECTION_NAME}=tcp:3306
+          securityContext:
+            runAsUser: 2
+            allowPrivilegeEscalation: false
       restartPolicy: Always
+---
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: backend-http-hc-config
+spec:
+  healthCheck:
+    checkIntervalSec: 15
+    port: 8080
+    type: HTTP
+    requestPath: /healthz
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${ROLE}-service
+  labels:
+    app: ${ROLE}
+  annotations:
+    cloud.google.com/backend-config: '{"default": "backend-http-hc-config"}'
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    app: ${ROLE}
