@@ -15,9 +15,11 @@ db_config = {
 frontend_config = {
   is_enabled = "false"
   image_tag  = "<image-tag>
+  pod_replicas = "2"
 }
 
 backend_config = {
   is_enabled = "false"
   image_tag  = "<image-tag>
+  pod_replicas = "2"
 }
