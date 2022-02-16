@@ -1,4 +1,5 @@
 
+# NOTE: If provider_gke.tf exists, we will deploy all Kubernetes Manifest files
 data "kubectl_file_documents" "backend" {
   count = fileexists("${path.module}/provider_gke.tf") ? 1 : 0
   content = templatefile("${path.module}/manifests/backend.yaml", {

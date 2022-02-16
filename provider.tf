@@ -19,7 +19,7 @@ provider "google" {
 resource "local_file" "provider_gke" {
   count    = var.frontend_config.is_enabled || var.backend_config.is_enabled ? 1 : 0
   content  = <<EOF
-# Note: Dynamically generated only if GKE Cluster is created
+# NOTE: Dynamically generated only if GKE Cluster is created
 module "gke_auth" {
   depends_on = [
     google_container_cluster.todoapp[0]

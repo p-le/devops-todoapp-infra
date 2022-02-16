@@ -6,7 +6,7 @@ resource "google_artifact_registry_repository" "todoapp" {
   format        = "DOCKER"
 }
 
-# Note: Allow pulling Container Image in Artifact Registry from GKE Node Pool
+# NOTE: Allow pulling Container Image in Artifact Registry from GKE Node Pool Instance
 resource "google_artifact_registry_repository_iam_member" "registry_reader" {
   count      = var.frontend_config.is_enabled || var.backend_config.is_enabled ? 1 : 0
   provider   = google-beta
